@@ -1,0 +1,18 @@
+{
+  "_comment": "SentinelGate route policy. Edited without touching gateway code — loaded at startup by policy.py. Format: 'METHOD ROUTE_TEMPLATE': [allowed roles]. Omit a route to allow any authenticated role.",
+  "policy": {
+    "POST /questions/add-mcq": ["teacher"],
+    "POST /questions/upload-pdf": ["teacher"],
+    "POST /exams": ["teacher"],
+    "POST /evaluate": ["teacher"],
+    "GET /evaluations/{student_id}": ["teacher"],
+    "POST /publish-result": ["teacher"],
+    "POST /submit-answer": ["student"],
+    "GET /logs": ["teacher"]
+  },
+  "ownership_params": {
+    "GET /submissions/{student_id}": "student_id",
+    "GET /results/{student_id}": "student_id",
+    "GET /logs/{user_id}": "user_id"
+  }
+}

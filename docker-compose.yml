@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  login_service:
+    build: ./login_service
+    container_name: login_service
+    environment:
+      - SERVICE_NAME=login_service
+      - SECRET_KEY=${SECRET_KEY}
+    networks:
+      - exam_network
+    volumes:
+      - login_db:/app/data
+
+  question_service:
+    build: ./question_service
+    container_name: question_service
+    environment:
+      - SERVICE_NAME=question_service
+      - INTERNAL_SERVICE_TOKEN=${INTERNAL_SERVICE_TOKEN}
+    networks:
+      - exam_network
+    volumes:
+      - question_db:/app/data
+    depends_on:
+      - login_service
+
+  exam_service:
+    build: ./exam_service
+    container_name: exam_service
+    environment:
+      - SERVICE_NAME=exam_service
+    networks:
+      - exam_network
+    volumes:
+      - exam_db:/app/data
+    depends_on:
+      - login_service
+
+  logging_service:
+    build: ./logging_service
+    container_name: logging_service
+    environment:
+      - SERVICE_NAME=logging_service
+      - INTERNAL_SERVICE_TOKEN=${INTERNAL_SERVICE_TOKEN}
+    networks:
+      - exam_network
+    volumes:
+      - logging_db:/app/data
+
+  submission_service:
+    build: ./submission_service
+    container_name: submission_service
+    environment:
+      - SERVICE_NAME=submission_service
+      - INTERNAL_SERVICE_TOKEN=${INTERNAL_SERVICE_TOKEN}
+    networks:
+      - exam_network
+    volumes:
+      - submission_db:/app/data
+    depends_on:
+      - exam_service
+
+  evaluation_service:
+    build: ./evaluation_service
+    container_name: evaluation_service
+    environment:
+      - SERVICE_NAME=evaluation_service
+      - INTERNAL_SERVICE_TOKEN=${INTERNAL_SERVICE_TOKEN}
+    networks:
+      - exam_network
+    volumes:
+      - evaluation_db:/app/data
+    depends_on:
+      - submission_service
+
+  result_service:
+    build: ./result_service
+    container_name: result_service
+    environment:
+      - SERVICE_NAME=result_service
+      - INTERNAL_SERVICE_TOKEN=${INTERNAL_SERVICE_TOKEN}
+    networks:
+      - exam_network
+    volumes:
+      - result_db:/app/data
+    depends_on:
+      - evaluation_service
+
+  api_gateway:
+    build: ./api_gateway
+    container_name: api_gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - SERVICE_NAME=api_gateway
+      - INTERNAL_SERVICE_TOKEN=${INTERNAL_SERVICE_TOKEN}
+    networks:
+      - exam_network
+    depends_on:
+      - login_service
+      - question_service
+      - exam_service
+      - logging_service
+      - submission_service
+      - evaluation_service
+      - result_service
+
+networks:
+  exam_network:
+    driver: bridge
+
+volumes:
+  login_db:
+  question_db:
+  exam_db:
+  logging_db:
+  submission_db:
+  evaluation_db:
+  result_db:

@@ -1,0 +1,5 @@
+fastapi  #builds oour API
+uvicorn  #runs our server
+requests #alls other services (submission, question)
+sqlalchemy  #handles evaluation database
+pydantic  #validates input

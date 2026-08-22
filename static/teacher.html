@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Exam Portal - Teacher Dashboard</title>
+	<style>
+		:root {
+			--page-bg: #f5f5f4;
+			--shell-bg: #f2f1ef;
+			--surface: #ffffff;
+			--text-main: #1f2937;
+			--text-muted: #6b7280;
+			--line: #e5e7eb;
+			--brand: #5f56bf;
+			--brand-soft: #e7e3f7;
+			--brand-deep: #4f45af;
+			--green-soft: #e7f4e7;
+			--green-deep: #376a37;
+			--amber-soft: #f7ecd2;
+			--amber-deep: #8f6a2a;
+			--slate-soft: #eceff3;
+			--slate-deep: #4b5563;
+			--red-soft: #fce8e8;
+			--red-deep: #9b2c2c;
+			--radius-lg: 14px;
+			--radius-md: 12px;
+			--radius-sm: 8px;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			min-height: 100vh;
+			background: var(--page-bg);
+			font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+			color: var(--text-main);
+			padding: 12px;
+		}
+
+		.shell {
+			min-height: calc(100vh - 24px);
+			background: var(--shell-bg);
+			border: 0.5px solid var(--line);
+			border-radius: 16px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.global-tabs {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			border-bottom: 0.5px solid var(--line);
+			background: #f3f2f0;
+			padding: 8px;
+			flex-wrap: wrap;
+		}
+
+		.tab {
+			border: 0.5px solid transparent;
+			background: transparent;
+			color: #1f2937;
+			font-size: 13px;
+			padding: 8px 12px;
+			border-radius: 8px;
+			cursor: pointer;
+			transition: background-color 0.2s ease;
+		}
+
+		.tab:hover {
+			background: #ece9f5;
+		}
+
+		.tab.active {
+			background: var(--brand-soft);
+			border-color: #d8d2ef;
+			color: #3f368b;
+		}
+
+		.topbar {
+			height: 68px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			border-bottom: 0.5px solid var(--line);
+			background: var(--surface);
+			padding: 0 18px;
+		}
+
+		.brand {
+			font-size: 34px;
+			font-weight: 400;
+			letter-spacing: -0.02em;
+		}
+
+		.identity {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.avatar {
+			width: 34px;
+			height: 34px;
+			border-radius: 999px;
+			background: #dcefe8;
+			color: #1f6c57;
+			font-size: 12px;
+			font-weight: 700;
+			display: grid;
+			place-items: center;
+		}
+
+		.username {
+			font-size: 28px;
+			font-weight: 300;
+			letter-spacing: -0.01em;
+		}
+
+		.logout {
+			border: 0.5px solid var(--line);
+			background: #fff;
+			color: #374151;
+			font-size: 22px;
+			font-weight: 300;
+			border-radius: var(--radius-sm);
+			padding: 6px 10px;
+			cursor: pointer;
+		}
+
+		.main {
+			flex: 1;
+			min-height: 0;
+			display: grid;
+			grid-template-columns: 260px minmax(0, 1fr);
+		}
+
+		.sidebar {
+			border-right: 0.5px solid var(--line);
+			padding: 22px 14px;
+			overflow-y: auto;
+		}
+
+		.section-label {
+			font-size: 14px;
+			color: var(--text-muted);
+			margin: 0 12px 10px;
+		}
+
+		.menu {
+			list-style: none;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			margin-bottom: 18px;
+		}
+
+		.menu-item {
+			border: 0.5px solid transparent;
+			border-radius: 8px;
+			padding: 10px 12px;
+			font-size: 30px;
+			line-height: 1;
+			font-weight: 300;
+			cursor: pointer;
+			transition: background-color 0.2s ease;
+		}
+
+		.menu-item:hover {
+			background: #ece9f5;
+		}
+
+		.menu-item.active {
+			background: #d9d5e8;
+			color: #443b94;
+		}
+
+		.content {
+			padding: 18px;
+			overflow-y: auto;
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+		}
+
+		.metrics {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.metric {
+			background: #f7f7f6;
+			border-radius: 10px;
+			padding: 14px;
+			min-height: 126px;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
+
+		.metric .label {
+			color: var(--text-muted);
+			font-size: 14px;
+		}
+
+		.metric .value {
+			font-size: 50px;
+			font-weight: 300;
+			line-height: 1;
+			letter-spacing: -0.02em;
+		}
+
+		.panel {
+			background: var(--surface);
+			border: 0.5px solid var(--line);
+			border-radius: var(--radius-lg);
+			padding: 16px;
+			display: flex;
+			flex-direction: column;
+			gap: 14px;
+		}
+
+		.panel-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 10px;
+			flex-wrap: wrap;
+		}
+
+		.title {
+			font-size: 36px;
+			font-weight: 300;
+			letter-spacing: -0.02em;
+		}
+
+		.head-actions {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			flex-wrap: wrap;
+		}
+
+		.input,
+		.select {
+			border: 0.5px solid var(--line);
+			border-radius: 8px;
+			font-size: 13px;
+			min-height: 32px;
+			padding: 7px 10px;
+			background: #fff;
+			color: #1f2937;
+		}
+
+		.input {
+			width: 220px;
+		}
+
+		.primary {
+			border: none;
+			border-radius: 8px;
+			min-height: 32px;
+			padding: 7px 12px;
+			font-size: 13px;
+			font-weight: 600;
+			color: #fff;
+			background: var(--brand);
+			cursor: pointer;
+			transition: background-color 0.2s ease, transform 0.2s ease;
+		}
+
+		.primary:hover {
+			background: var(--brand-deep);
+			transform: translateY(-1px);
+		}
+
+		.subnote {
+			font-size: 12px;
+			color: var(--text-muted);
+		}
+
+		.rows {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.row {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto auto auto;
+			align-items: center;
+			gap: 10px;
+			border-bottom: 0.5px solid #ececec;
+			padding: 12px 0;
+		}
+
+		.row:last-child {
+			border-bottom: none;
+		}
+
+		.exam-name {
+			font-size: 32px;
+			font-weight: 300;
+			letter-spacing: -0.02em;
+			margin-bottom: 3px;
+		}
+
+		.meta {
+			font-size: 24px;
+			font-weight: 300;
+			color: #384150;
+			line-height: 1;
+		}
+
+		.badge {
+			border-radius: 999px;
+			padding: 6px 12px;
+			font-size: 12px;
+			font-weight: 600;
+			min-width: 82px;
+			text-align: center;
+			border: 0.5px solid transparent;
+		}
+
+		.badge.active {
+			background: var(--green-soft);
+			color: var(--green-deep);
+			border-color: #d3ebd3;
+		}
+
+		.badge.pending {
+			background: var(--amber-soft);
+			color: var(--amber-deep);
+			border-color: #ecdcb8;
+		}
+
+		.badge.closed {
+			background: var(--slate-soft);
+			color: var(--slate-deep);
+			border-color: #d9e0e8;
+		}
+
+		.action,
+		.danger {
+			border: 0.5px solid var(--line);
+			border-radius: 8px;
+			font-size: 13px;
+			min-height: 32px;
+			padding: 7px 11px;
+			background: #fff;
+			cursor: pointer;
+			color: #1f2937;
+		}
+
+		.danger {
+			border-color: #f2c5c5;
+			color: var(--red-deep);
+			background: var(--red-soft);
+		}
+
+		.empty {
+			border: 0.5px dashed #d8d8d8;
+			border-radius: 10px;
+			padding: 20px;
+			text-align: center;
+			color: var(--text-muted);
+			font-size: 13px;
+			background: #fbfbfb;
+		}
+
+		.modal-backdrop {
+			position: fixed;
+			inset: 0;
+			background: rgba(17, 24, 39, 0.35);
+			display: none;
+			align-items: center;
+			justify-content: center;
+			padding: 14px;
+			z-index: 30;
+		}
+
+		.modal {
+			width: min(560px, 100%);
+			background: #fff;
+			border: 0.5px solid var(--line);
+			border-radius: var(--radius-md);
+			padding: 16px;
+		}
+
+		.modal-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 10px;
+		}
+
+		.modal-title {
+			font-size: 18px;
+			font-weight: 600;
+		}
+
+		.close-btn {
+			border: 0.5px solid var(--line);
+			border-radius: 8px;
+			width: 30px;
+			height: 30px;
+			background: #fff;
+			cursor: pointer;
+		}
+
+		.form-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+		}
+
+		.full {
+			grid-column: 1 / -1;
+		}
+
+		.field-wrap {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		.field-wrap label {
+			font-size: 12px;
+			color: var(--text-muted);
+		}
+
+		.error {
+			min-height: 16px;
+			margin-top: 6px;
+			color: var(--red-deep);
+			font-size: 12px;
+		}
+
+		.modal-foot {
+			display: flex;
+			justify-content: flex-end;
+			gap: 8px;
+			margin-top: 8px;
+		}
+
+		.toast-wrap {
+			position: fixed;
+			right: 12px;
+			bottom: 12px;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			z-index: 40;
+		}
+
+		.toast {
+			background: #1f2937;
+			color: #fff;
+			font-size: 12px;
+			padding: 10px 12px;
+			border-radius: 10px;
+		}
+
+		@media (max-width: 1200px) {
+			.brand {
+				font-size: 28px;
+			}
+
+			.username {
+				font-size: 22px;
+			}
+
+			.menu-item {
+				font-size: 24px;
+			}
+
+			.title {
+				font-size: 30px;
+			}
+
+			.exam-name {
+				font-size: 28px;
+			}
+
+			.meta {
+				font-size: 20px;
+			}
+		}
+
+		@media (max-width: 900px) {
+			.main {
+				grid-template-columns: 1fr;
+			}
+
+			.sidebar {
+				border-right: none;
+				border-bottom: 0.5px solid var(--line);
+				padding: 10px;
+			}
+
+			.menu {
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+
+			.menu-item {
+				font-size: 16px;
+				font-weight: 400;
+			}
+
+			.row {
+				grid-template-columns: 1fr;
+			}
+
+			.metrics {
+				grid-template-columns: 1fr;
+			}
+
+			.metric .value {
+				font-size: 42px;
+			}
+
+			.topbar {
+				padding: 0 12px;
+			}
+
+			.brand {
+				font-size: 24px;
+			}
+
+			.username {
+				font-size: 16px;
+			}
+
+			.logout {
+				font-size: 14px;
+			}
+
+			.input {
+				width: 100%;
+			}
+
+			.form-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="shell">
+		<header class="global-tabs" aria-label="Top pages">
+			<button class="tab">Login page</button>
+			<button class="tab">Student dashboard</button>
+			<button class="tab">Exam page</button>
+			<button class="tab active">Teacher dashboard</button>
+		</header>
+
+		<div class="topbar">
+			<div class="brand">Exam portal</div>
+			<div class="identity">
+				<div class="avatar" id="avatar">T1</div>
+				<div class="username" id="username">teacher1</div>
+				<button class="logout" id="logoutBtn">Log out</button>
+			</div>
+		</div>
+
+		<div class="main">
+			<aside class="sidebar" aria-label="Teacher navigation">
+				<div class="section-label">Manage</div>
+				<ul class="menu" id="manageMenu">
+					<li class="menu-item active">Dashboard</li>
+					<li class="menu-item">Exams</li>
+					<li class="menu-item">Questions</li>
+					<li class="menu-item">Results</li>
+					<li class="menu-item">Evaluate</li>
+					<li class="menu-item">Publish results</li>
+				</ul>
+
+				<div class="section-label">Monitor</div>
+				<ul class="menu">
+					<li class="menu-item">Activity logs</li>
+				</ul>
+			</aside>
+
+			<section class="content">
+				<section class="metrics" aria-label="Metrics">
+					<article class="metric">
+						<div class="label">Total exams</div>
+						<div class="value" id="totalExams">0</div>
+					</article>
+					<article class="metric">
+						<div class="label">Students</div>
+						<div class="value" id="totalStudents">0</div>
+					</article>
+					<article class="metric">
+						<div class="label">Pending eval</div>
+						<div class="value" id="pendingEval">0</div>
+					</article>
+					<article class="metric">
+						<div class="label">Avg score</div>
+						<div class="value" id="avgScore">0%</div>
+					</article>
+				</section>
+
+				<section class="panel" aria-label="Exams list">
+					<div class="panel-head">
+						<h2 class="title">Exams</h2>
+						<div class="head-actions">
+							<input class="input" id="searchInput" type="search" placeholder="Search exam" aria-label="Search exam">
+							<select class="select" id="statusFilter" aria-label="Filter by status">
+								<option value="all">All statuses</option>
+								<option value="active">Active</option>
+								<option value="pending">Pending</option>
+								<option value="closed">Closed</option>
+							</select>
+							<select class="select" id="sortBy" aria-label="Sort exams">
+								<option value="name">Sort by name</option>
+								<option value="students">Sort by students</option>
+								<option value="marks">Sort by marks</option>
+							</select>
+							<button class="primary" id="newExamBtn">+ New exam</button>
+						</div>
+					</div>
+
+					<div class="subnote" id="listSummary">0 exams shown</div>
+					<div class="rows" id="examRows"></div>
+				</section>
+			</section>
+		</div>
+	</div>
+
+	<div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+		<div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+			<div class="modal-head">
+				<h3 class="modal-title" id="modalTitle">Create New Exam</h3>
+				<button class="close-btn" id="closeModalBtn" aria-label="Close">x</button>
+			</div>
+			<form id="examForm">
+				<div class="form-grid">
+					<div class="field-wrap full">
+						<label for="examName">Exam name</label>
+						<input class="input" id="examName" type="text" maxlength="60" placeholder="Example: Data structures">
+					</div>
+					<div class="field-wrap">
+						<label for="studentCount">Students</label>
+						<input class="input" id="studentCount" type="number" min="1" max="9999" placeholder="20">
+					</div>
+					<div class="field-wrap">
+						<label for="marks">Total marks</label>
+						<input class="input" id="marks" type="number" min="10" max="1000" placeholder="50">
+					</div>
+					<div class="field-wrap">
+						<label for="status">Status</label>
+						<select class="select" id="status">
+							<option value="active">Active</option>
+							<option value="pending">Pending</option>
+							<option value="closed">Closed</option>
+						</select>
+					</div>
+					<div class="field-wrap">
+						<label for="avg">Avg score (for closed exams)</label>
+						<input class="input" id="avg" type="number" min="0" max="100" placeholder="74">
+					</div>
+				</div>
+				<div class="error" id="formError"></div>
+				<div class="modal-foot">
+					<button class="logout" type="button" id="cancelBtn">Cancel</button>
+					<button class="primary" type="submit">Create exam</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="toast-wrap" id="toastWrap"></div>
+
+	<script>
+		const state = {
+			teacher: {
+				name: localStorage.getItem("exam_portal_current_user") || "teacher1",
+				initials: "T1"
+			},
+			exams: [],
+			filters: {
+				search: "",
+				status: "all",
+				sort: "name"
+			},
+			loading: false
+		};
+
+		const refs = {
+			avatar: document.getElementById("avatar"),
+			username: document.getElementById("username"),
+			logoutBtn: document.getElementById("logoutBtn"),
+			totalExams: document.getElementById("totalExams"),
+			totalStudents: document.getElementById("totalStudents"),
+			pendingEval: document.getElementById("pendingEval"),
+			avgScore: document.getElementById("avgScore"),
+			searchInput: document.getElementById("searchInput"),
+			statusFilter: document.getElementById("statusFilter"),
+			sortBy: document.getElementById("sortBy"),
+			listSummary: document.getElementById("listSummary"),
+			examRows: document.getElementById("examRows"),
+			newExamBtn: document.getElementById("newExamBtn"),
+			modalBackdrop: document.getElementById("modalBackdrop"),
+			closeModalBtn: document.getElementById("closeModalBtn"),
+			cancelBtn: document.getElementById("cancelBtn"),
+			examForm: document.getElementById("examForm"),
+			examName: document.getElementById("examName"),
+			studentCount: document.getElementById("studentCount"),
+			marks: document.getElementById("marks"),
+			status: document.getElementById("status"),
+			avg: document.getElementById("avg"),
+			formError: document.getElementById("formError"),
+			toastWrap: document.getElementById("toastWrap")
+		};
+
+		const apiBase = localStorage.getItem("exam_portal_api_base") || "";
+		const authToken = localStorage.getItem("exam_portal_token") || "";
+
+		async function init() {
+			if (!authToken) {
+				window.location.href = "login.html";
+				return;
+			}
+
+			const ok = await verifySession();
+			if (!ok) {
+				window.location.href = "login.html";
+				return;
+			}
+
+			state.teacher.initials = getInitials(state.teacher.name);
+			refs.avatar.textContent = state.teacher.initials;
+			refs.username.textContent = state.teacher.name;
+			bindEvents();
+			await loadExams();
+			await logPageVisit();
+		}
+
+		function bindEvents() {
+			refs.searchInput.addEventListener("input", (event) => {
+				state.filters.search = event.target.value.trim().toLowerCase();
+				renderRows();
+			});
+
+			refs.statusFilter.addEventListener("change", (event) => {
+				state.filters.status = event.target.value;
+				renderRows();
+			});
+
+			refs.sortBy.addEventListener("change", (event) => {
+				state.filters.sort = event.target.value;
+				renderRows();
+			});
+
+			refs.newExamBtn.addEventListener("click", openModal);
+			refs.closeModalBtn.addEventListener("click", closeModal);
+			refs.cancelBtn.addEventListener("click", closeModal);
+
+			refs.modalBackdrop.addEventListener("click", (event) => {
+				if (event.target === refs.modalBackdrop) {
+					closeModal();
+				}
+			});
+
+			refs.examForm.addEventListener("submit", createExam);
+			refs.logoutBtn.addEventListener("click", logout);
+
+			document.addEventListener("keydown", (event) => {
+				if (event.key === "Escape" && refs.modalBackdrop.style.display === "flex") {
+					closeModal();
+				}
+			});
+		}
+
+		async function loadExams() {
+			state.loading = true;
+			refs.listSummary.textContent = "Loading exams...";
+			refs.examRows.innerHTML = '<div class="empty">Fetching latest exams from backend...</div>';
+
+			try {
+				const response = await apiRequest("/exams", { method: "GET" });
+				const exams = Array.isArray(response) ? response : [];
+				state.exams = exams.map(mapExamFromApi);
+				render();
+			} catch (error) {
+				console.error("Failed to load exams", error);
+				refs.examRows.innerHTML = '<div class="empty">Could not load exams from backend. Check gateway/service status.</div>';
+				refs.listSummary.textContent = "0 exams shown";
+				toast("Backend unavailable for exams.");
+			} finally {
+				state.loading = false;
+			}
+		}
+
+		function render() {
+			renderMetrics();
+			renderRows();
+		}
+
+		function renderMetrics() {
+			const total = state.exams.length;
+			const students = state.exams.reduce((acc, exam) => acc + exam.students, 0);
+			const pending = state.exams.filter((exam) => exam.status === "pending").length;
+			const closed = state.exams.filter((exam) => exam.status === "closed");
+			const avg = closed.length
+				? Math.round(closed.reduce((acc, exam) => acc + exam.avg, 0) / closed.length)
+				: 0;
+
+			refs.totalExams.textContent = String(total);
+			refs.totalStudents.textContent = String(students);
+			refs.pendingEval.textContent = String(pending);
+			refs.avgScore.textContent = avg + "%";
+		}
+
+		function getVisibleExams() {
+			const visible = state.exams.filter((exam) => {
+				const searchMatch = !state.filters.search || exam.name.toLowerCase().includes(state.filters.search);
+				const statusMatch = state.filters.status === "all" || exam.status === state.filters.status;
+				return searchMatch && statusMatch;
+			});
+
+			if (state.filters.sort === "students") {
+				visible.sort((a, b) => b.students - a.students);
+			} else if (state.filters.sort === "marks") {
+				visible.sort((a, b) => b.marks - a.marks);
+			} else {
+				visible.sort((a, b) => a.name.localeCompare(b.name));
+			}
+
+			return visible;
+		}
+
+		function renderRows() {
+			const visible = getVisibleExams();
+			refs.listSummary.textContent = visible.length + " exam" + (visible.length === 1 ? "" : "s") + " shown";
+
+			if (!visible.length) {
+				refs.examRows.innerHTML = '<div class="empty">No exams match these filters.</div>';
+				return;
+			}
+
+			refs.examRows.innerHTML = visible.map((exam) => {
+				const statusText = capitalize(exam.status);
+				const actionText = exam.status === "closed" ? "Results" : "Evaluate";
+				return `
+					<article class="row">
+						<div>
+							<div class="exam-name">${escapeHtml(exam.name)}</div>
+							<div class="meta">${exam.students} students - ${exam.marks} marks</div>
+						</div>
+						<span class="badge ${exam.status}">${statusText}</span>
+						<button class="action" data-action="open" data-id="${exam.id}">${actionText}</button>
+						<button class="danger" data-action="refresh">Reload</button>
+					</article>
+				`;
+			}).join("");
+
+			refs.examRows.querySelectorAll("button[data-action]").forEach((button) => {
+				button.addEventListener("click", () => {
+					const action = button.getAttribute("data-action");
+					const idAttr = button.getAttribute("data-id");
+					if (action === "open" && idAttr) {
+						openExamAction(Number(idAttr));
+					}
+					if (action === "refresh") {
+						loadExams();
+					}
+				});
+			});
+		}
+
+		function openExamAction(id) {
+			const exam = state.exams.find((item) => item.id === id);
+			if (!exam) {
+				return;
+			}
+
+			if (exam.status === "closed") {
+				toast("Opening results for " + exam.name);
+			} else {
+				toast("Opening evaluation for " + exam.name);
+			}
+		}
+
+		function openModal() {
+			refs.formError.textContent = "";
+			refs.examForm.reset();
+			refs.modalBackdrop.style.display = "flex";
+			refs.modalBackdrop.setAttribute("aria-hidden", "false");
+			setTimeout(() => refs.examName.focus(), 0);
+		}
+
+		function closeModal() {
+			refs.modalBackdrop.style.display = "none";
+			refs.modalBackdrop.setAttribute("aria-hidden", "true");
+		}
+
+		async function createExam(event) {
+			event.preventDefault();
+
+			const name = refs.examName.value.trim();
+			const students = Number(refs.studentCount.value);
+			const marks = Number(refs.marks.value);
+			const status = refs.status.value;
+			const avgInput = Number(refs.avg.value);
+
+			if (name.length < 3) {
+				refs.formError.textContent = "Exam name must be at least 3 characters.";
+				return;
+			}
+
+			if (!Number.isFinite(students) || students < 1) {
+				refs.formError.textContent = "Students should be a valid positive number.";
+				return;
+			}
+
+			if (!Number.isFinite(marks) || marks < 10) {
+				refs.formError.textContent = "Marks should be at least 10.";
+				return;
+			}
+
+			const avg = status === "closed"
+				? (Number.isFinite(avgInput) && avgInput >= 0 && avgInput <= 100 ? avgInput : 70)
+				: 0;
+
+			try {
+				await apiRequest("/exams", {
+					method: "POST",
+					body: JSON.stringify({
+						title: name,
+						description: "",
+						total_marks: marks,
+						duration_minutes: 60,
+						status,
+						target_students: students,
+						average_score: avg
+					})
+				});
+
+				closeModal();
+				toast("Created exam: " + name);
+				await loadExams();
+			} catch (error) {
+				console.error("Create exam failed", error);
+				refs.formError.textContent = readErrorMessage(error, "Could not create exam via backend.");
+			}
+		}
+
+		async function verifySession() {
+			try {
+				await apiRequest("/auth/verify", { method: "GET" });
+				return true;
+			} catch (error) {
+				console.error("Session verification failed", error);
+				return false;
+			}
+		}
+
+		async function logPageVisit() {
+			try {
+				await apiRequest("/log-event", {
+					method: "POST",
+					body: JSON.stringify({
+						user_id: state.teacher.name,
+						service: "frontend",
+						event_type: "TEACHER_DASHBOARD_OPENED",
+						description: "Teacher dashboard opened"
+					})
+				});
+			} catch (error) {
+				console.warn("Failed to write page visit log", error);
+			}
+		}
+
+		function logout() {
+			localStorage.removeItem("exam_portal_token");
+			localStorage.removeItem("exam_portal_role");
+			localStorage.removeItem("exam_portal_current_user");
+			toast("Logging out...");
+			setTimeout(() => {
+				window.location.href = "login.html";
+			}, 500);
+		}
+
+		async function apiRequest(path, options = {}) {
+			const response = await fetch(`${apiBase}${path}`, {
+				method: options.method || "GET",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${authToken}`,
+					...(options.headers || {})
+				},
+				body: options.body
+			});
+
+			const payload = await response.json().catch(() => ({}));
+			if (!response.ok) {
+				throw payload;
+			}
+
+			return payload;
+		}
+
+		function mapExamFromApi(item) {
+			const status = ["active", "pending", "closed"].includes(String(item.status || "").toLowerCase())
+				? String(item.status).toLowerCase()
+				: "active";
+			return {
+				id: Number(item.id),
+				name: String(item.title || "Untitled exam"),
+				students: Math.max(Number(item.target_students || 0), 0),
+				marks: Number(item.total_marks || 0),
+				status,
+				avg: Number(item.average_score || 0)
+			};
+		}
+
+		function readErrorMessage(error, fallback) {
+			if (!error) {
+				return fallback;
+			}
+			if (typeof error.detail === "string") {
+				return error.detail;
+			}
+			if (error.detail && typeof error.detail.detail === "string") {
+				return error.detail.detail;
+			}
+			return fallback;
+		}
+
+		function toast(message) {
+			const node = document.createElement("div");
+			node.className = "toast";
+			node.textContent = message;
+			refs.toastWrap.appendChild(node);
+
+			setTimeout(() => {
+				node.remove();
+			}, 2400);
+		}
+
+		function capitalize(value) {
+			return value.charAt(0).toUpperCase() + value.slice(1);
+		}
+
+		function getInitials(name) {
+			const cleaned = (name || "").trim();
+			if (!cleaned) {
+				return "T";
+			}
+			const parts = cleaned.split(/\s+/);
+			if (parts.length === 1) {
+				return parts[0].slice(0, 2).toUpperCase();
+			}
+			return (parts[0][0] + parts[1][0]).toUpperCase();
+		}
+
+		function escapeHtml(value) {
+			return value
+				.replaceAll("&", "&amp;")
+				.replaceAll("<", "&lt;")
+				.replaceAll(">", "&gt;")
+				.replaceAll('"', "&quot;")
+				.replaceAll("'", "&#039;");
+		}
+
+		init();
+	</script>
+</body>
+</html>
